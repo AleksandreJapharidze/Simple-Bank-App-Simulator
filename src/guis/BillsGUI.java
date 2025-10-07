@@ -86,7 +86,11 @@ public class BillsGUI extends Base implements ActionListener {
         }
         billsDialog.addDollarSignLabel();
         billsDialog.addAmountLabel(billAmount);
-        billsDialog.addPayButton();
+        if (billAmount.equalsIgnoreCase("0")) {
+            billsDialog.addPraiseLabel();
+        } else {
+            billsDialog.addPayButton();
+        }
 
         billsDialog.setVisible(true);
     }

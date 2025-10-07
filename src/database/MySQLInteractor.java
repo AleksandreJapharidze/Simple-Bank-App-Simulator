@@ -223,6 +223,43 @@ public class MySQLInteractor {
         return null;
     }
 
+    public static boolean updateBills(User user, String billType) {
+        String columnName;
+        switch (billType) {
+            case "Electricity":
+                columnName = "electricity_bill";
+                break;
+            case "Internet":
+                columnName = "internet_bill";
+                break;
+            case "Gas":
+                columnName = "gas_bill";
+                break;
+            case "Water":
+                columnName = "water_bill";
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid bill type: " + "'" + billType + "'");
+        }
+
+        try {
+            Connection connection = DriverManager.getConnection(DATABASE_URL, DATABASE_USERNAME, DATABASE_PASSWORD);
+
+            PreparedStatement preparedStatement = connection.prepareStatement(
+                    "UPDATE bills SET " + columnName + " = 0 WHERE users_id = ?"
+            );
+
+            preparedStatement.setInt(1, user.getId());
+
+            preparedStatement.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public static ArrayList<Transaction> getPastTransactions(User user) {
         ArrayList<Transaction> pastTransactions = new ArrayList<>();
         try {

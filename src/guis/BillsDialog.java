@@ -7,27 +7,17 @@ import database.User;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 
-public class BillsDialog extends JDialog implements ActionListener {
-    private User user;
-    private BankAppGUI bankAppGUI;
+public class BillsDialog extends BaseDialog {
     private BillsGUI billsGUI;
-    private JLabel balanceLabel;
-    private JLabel typeLabel, amountLabel, dollarSignLabel;
+    private JLabel balanceLabel, typeLabel, amountLabel, dollarSignLabel;
     private JButton payButton;
 
     public BillsDialog(BillsGUI billsGUI, BankAppGUI bankAppGUI, User user) {
-        setSize(300, 250);
-        setModal(true);
-        setLocationRelativeTo(billsGUI);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setResizable(false);
-        setLayout(null);
+        super(bankAppGUI, user, billsGUI, 300, 250);
         this.billsGUI = billsGUI;
-        this.bankAppGUI = bankAppGUI;
-        this.user = user;
+        // Bills-specific setup...
     }
 
     public void addCurrentBalance() {
@@ -68,13 +58,23 @@ public class BillsDialog extends JDialog implements ActionListener {
         add(payButton);
     }
 
+    public void addPraiseLabel() {
+        JLabel praiseLabel = new JLabel("No bill! You're a responsible user!");
+        praiseLabel.setBounds(0, 150, super.getWidth() - 20, 20);
+        praiseLabel.setFont(new Font("Dialog", Font.BOLD, 16));
+        praiseLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(praiseLabel);
+    }
+
     private void handlePayment(int amount) {
         Transaction transaction;
         user.setCurrentBalance(user.getCurrentBalance().subtract(new BigDecimal(amount)));
         transaction = new Transaction(user.getId(), "Service charge", new BigDecimal(-amount), null);
 
-        if (MySQLInteractor.addTransactionToDatabase(transaction) && MySQLInteractor.updateCurrentBalance(user)) {
+        if (MySQLInteractor.addTransactionToDatabase(transaction) && MySQLInteractor.updateCurrentBalance(user)
+                && MySQLInteractor.updateBills(user, typeLabel.getText().replace(" bill:", ""))) {
             JOptionPane.showMessageDialog(this, "Payment successful!");
+            amountLabel.setText("0");
             resetFieldsAndUpdateCurrentBalance();
         } else {
             JOptionPane.showMessageDialog(this, "Payment failed!");

@@ -7,13 +7,10 @@ import database.User;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
-public class BankAppDialog extends JDialog implements ActionListener {
-    private User user;
-    private BankAppGUI bankAppGUI;
+public class BankAppDialog extends BaseDialog {
     private LoginGUI loginGUI;
     private JLabel balanceLabel, amountLabel, userLabel, accountDeletionLabel;
     private JTextField amountTextField, userTextField;
@@ -23,14 +20,8 @@ public class BankAppDialog extends JDialog implements ActionListener {
     private ArrayList<Transaction> pastTransactions;
 
     public BankAppDialog(BankAppGUI bankAppGUI, User user) {
-        setSize(400, 400);
-        setModal(true);
-        setLocationRelativeTo(bankAppGUI);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-        setResizable(false);
-        setLayout(null);
-        this.bankAppGUI = bankAppGUI;
-        this.user = user;
+        super(bankAppGUI, user, bankAppGUI, 400, 400);
+        // BankApp-specific setup...
     }
 
     public void addCurrentBalanceAndAmount() {
