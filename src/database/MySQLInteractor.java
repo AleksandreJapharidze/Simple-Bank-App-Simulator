@@ -65,12 +65,19 @@ public class MySQLInteractor {
                     "DELETE FROM transactions WHERE user_id = ?"
             );
 
+            PreparedStatement deleteBillsData = connection.prepareStatement(
+                    "DELETE FROM bills WHERE users_id = ?"
+            );
+
             PreparedStatement deleteAccountItself = connection.prepareStatement(
                     "DELETE FROM users WHERE id = ?"
             );
 
             deleteTransactionData.setInt(1, user.getId());
             deleteTransactionData.executeUpdate();
+
+            deleteBillsData.setInt(1, user.getId());
+            deleteBillsData.executeUpdate();
 
             deleteAccountItself.setInt(1, user.getId());
             deleteAccountItself.executeUpdate();
